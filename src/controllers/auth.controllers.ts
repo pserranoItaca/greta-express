@@ -1,17 +1,36 @@
 import { Request, Response } from "express";
-import AuthService from "../services/auth.service";
 import User from "../models/user.model";
+import AuthService from "../services/auth.service";
+
+const service = new AuthService();
+type TestType = {
+  email: string;
+};
 
 const login = async (req: Request, res: Response) => {
-  const { user, pass } = req.headers;
-  console.log(user);
-  console.log(pass);
-  console.log("done");
-  const loged: string = "loged";
-  res.send(loged);
-  // const users = await AuthService.login("pablo", "A,XS0");
-  // res.send(users);
+  try {
+    const body = req.body as User;
+    const user = await service.login(body.email, body.pass);
+    console.log(user);
+    console.log(typeof user);
+    res.status(201).send(user as User[]);
+  } catch (error) {
+    res.status(500).json({ message: "error" });
+  }
 };
-const register = () => {};
+const register = async (req: Request, res: Response) => {
+  try {
+    console.log(req.header);
+    const newUser = req.body as User;
+    const user = await service.register(
+      newUser.email,
+      newUser.user,
+      newUser.pass
+    );
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "error" });
+  }
+};
 
 export { login, register };
