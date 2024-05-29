@@ -1,5 +1,5 @@
 export default interface Base {
-  id: string;
+  id: number;
   active: boolean;
   deleted: boolean;
   created_at: string;

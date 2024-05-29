@@ -11,8 +11,7 @@ const login = async (req: Request, res: Response) => {
   try {
     const body = req.body as User;
     const user = await service.login(body.email, body.pass);
-    console.log(user);
-    console.log(typeof user);
+
     res.status(201).send(user as User[]);
   } catch (error) {
     res.status(500).json({ message: "error" });
@@ -24,7 +23,7 @@ const register = async (req: Request, res: Response) => {
     const newUser = req.body as User;
     const user = await service.register(
       newUser.email,
-      newUser.user,
+      newUser.username,
       newUser.pass
     );
     res.status(201).json(user);

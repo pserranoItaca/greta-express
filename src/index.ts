@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { authRouter } from "./router/auth/auth.routes";
+import { filmsRouter } from "./router/films/films.routes";
+import { userRouter } from "./router/user/user.routes";
 
 const app = express();
 
@@ -20,9 +22,9 @@ app.get("/", (req, res) => {
 
 app.use("/auth", authRouter);
 
-app.use("/category", authRouter);
-app.use("/films", authRouter);
-app.use("/user", authRouter);
+app.use("/films", filmsRouter);
+
+app.use("/user", userRouter);
 
 app.listen(PORT, () => {
   console.log(`server running on port http://localhost:${PORT}`);

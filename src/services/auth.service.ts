@@ -18,8 +18,8 @@ class AuthService {
 
   async register(email: string, user: string, pass: string) {
     const newUser: User = {
-      id: "",
-      user: user,
+      id: 0,
+      username: user,
       email: email,
       pass: pass,
       active: true,
@@ -29,7 +29,7 @@ class AuthService {
       deleted_at: null,
     };
 
-    const sql = `INSERT INTO users (username,email,pass,active,deleted) VALUES ('${newUser.user}','${newUser.email}','${newUser.pass}',${newUser.active},${newUser.deleted});`;
+    const sql = `INSERT INTO users (username,email,pass,active,deleted) VALUES ('${newUser.username}','${newUser.email}','${newUser.pass}',${newUser.active},${newUser.deleted});`;
 
     try {
       await client.query(sql);
