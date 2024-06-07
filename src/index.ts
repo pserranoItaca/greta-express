@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import fs from "node:fs";
+import path from "node:path";
 import { authRouter } from "./router/auth/auth.routes";
 import { filmsRouter } from "./router/films/films.routes";
 import { userRouter } from "./router/user/user.routes";

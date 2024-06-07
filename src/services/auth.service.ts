@@ -1,42 +1,54 @@
 import client from "../client/greta.client";
 import User from "../models/user.model";
+const bcrypt = require("bcryptjs");
 
+interface LoginDTO {
+  email: string;
+  pass: string;
+}
 class AuthService {
   constructor() {}
 
-  async login(email: string, pass: string) {
-    const sql = `SELECT email FROM users WHERE email = '${email}' AND pass = '${pass}';`;
+  async login(email: string, pass: string): Promise<User | null> {
+    const sqlLogin = `SELECT * FROM users WHERE email = ? AND pass = ?;`;
 
     try {
-      const email = await client.query(sql);
-      return email;
+      const rows = (await client.query(sqlLogin, [email, pass])) as User[];
+
+      if (rows.length === 0) {
+        return null;
+      }
+
+      return rows[0];
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error("Error en la consulta login:", error);
+      throw new Error("El login falló");
     }
   }
 
-  async register(email: string, user: string, pass: string) {
-    const newUser: User = {
-      id: 0,
-      username: user,
-      email: email,
-      pass: pass,
-      active: true,
-      deleted: false,
-      created_at: new Date().toUTCString(),
-      updated_at: new Date().getTime().toString(),
-      deleted_at: null,
-    };
-
-    const sql = `INSERT INTO users (username,email,pass,active,deleted) VALUES ('${newUser.username}','${newUser.email}','${newUser.pass}',${newUser.active},${newUser.deleted});`;
+  async register(newUser: User): Promise<User | null> {
+    const sqlCheckUser = `SELECT * FROM users WHERE email = ?;`;
+    const sqlRegister = `INSERT INTO users (username, email, pass) VALUES (?, ?, ?);`;
 
     try {
-      await client.query(sql);
-      return newUser;
+      const existingUser = (await client.query(sqlCheckUser, [
+        newUser.email,
+      ])) as User[];
+      if (existingUser.length > 0) {
+        return null;
+      }
+
+      const hashedPassword = await bcrypt.hash(newUser.pass, 10);
+
+      await client.query(sqlRegister, [
+        newUser.username,
+        newUser.email,
+        hashedPassword,
+      ]);
+      return await this.login(newUser.email, hashedPassword);
     } catch (error) {
-      console.log(error);
-      throw error;
+      console.error("Error en consulta al servidor:", error);
+      throw new Error("Fallo en el registro");
     }
   }
 }

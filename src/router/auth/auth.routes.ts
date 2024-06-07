@@ -5,5 +5,6 @@ const authRouter = express.Router();
 
 authRouter.post("/login", login);
 authRouter.post("/sign-up", register);
+// authRouter.post("/update", update);
 
 export { authRouter };
