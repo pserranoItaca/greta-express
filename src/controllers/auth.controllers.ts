@@ -20,12 +20,7 @@ const login = async (req: Request, res: Response) => {
 
 const register = async (req: Request, res: Response) => {
   try {
-    const body = req.body as {
-      email: string;
-      username: string;
-      pass: string;
-      avatar: string;
-    };
+    const body = req.body as User;
     const user = await service.register(body);
     if (user) {
       res.status(201).json(user);
@@ -39,8 +34,8 @@ const register = async (req: Request, res: Response) => {
 
 const update = async (req: Request, res: Response) => {
   try {
-    const body = req.body as { email: string; username: string; pass: string };
-    const user = await service.register(body);
+    const body = req.body as User;
+    const user = await service.update(body);
     if (user) {
       res.status(201).json(user);
     } else {
@@ -51,4 +46,4 @@ const update = async (req: Request, res: Response) => {
   }
 };
 
-export { login, register };
+export { login, register, update };

@@ -28,7 +28,7 @@ class AuthService {
 
   async register(newUser: User): Promise<User | null> {
     const sqlCheckUser = `SELECT * FROM users WHERE email = ?;`;
-    const sqlRegister = `INSERT INTO users (username, email, pass) VALUES (?, ?, ?);`;
+    const sqlRegister = `INSERT INTO users (username, email, pass,avatar) VALUES (?, ?, ?, ?);`;
 
     try {
       const existingUser = (await client.query(sqlCheckUser, [
@@ -44,6 +44,25 @@ class AuthService {
         newUser.username,
         newUser.email,
         hashedPassword,
+        newUser.avatar,
+      ]);
+      return await this.login(newUser.email, hashedPassword);
+    } catch (error) {
+      console.error("Error en consulta al servidor:", error);
+      throw new Error("Fallo en el registro");
+    }
+  }
+  async update(newUser: User): Promise<User | null> {
+    const sql = `UPDATE users SET username = ?, pass = ?, avatar = ?  WHERE email = ? ;`;
+
+    try {
+      const hashedPassword = await bcrypt.hash(newUser.pass, 10);
+
+      await client.query(sql, [
+        newUser.username,
+        hashedPassword,
+        newUser.avatar,
+        newUser.email,
       ]);
       return await this.login(newUser.email, hashedPassword);
     } catch (error) {
