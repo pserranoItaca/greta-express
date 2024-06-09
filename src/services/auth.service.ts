@@ -10,16 +10,26 @@ class AuthService {
   constructor() {}
 
   async login(email: string, pass: string): Promise<User | null> {
-    const sqlLogin = `SELECT * FROM users WHERE email = ? AND pass = ?;`;
+    const sqlLogin = `SELECT * FROM users WHERE email = ?;`;
 
     try {
-      const rows = (await client.query(sqlLogin, [email, pass])) as User[];
+      const rows = (await client.query(sqlLogin, [email])) as User[];
+
+      console.log(rows);
 
       if (rows.length === 0) {
         return null;
       }
 
-      return rows[0];
+      const user = rows[0];
+
+      const isPasswordValid = await bcrypt.compare(pass, user.pass);
+
+      if (!isPasswordValid) {
+        return null;
+      }
+
+      return user;
     } catch (error) {
       console.error("Error en la consulta login:", error);
       throw new Error("El login falló");
@@ -28,12 +38,15 @@ class AuthService {
 
   async register(newUser: User): Promise<User | null> {
     const sqlCheckUser = `SELECT * FROM users WHERE email = ?;`;
-    const sqlRegister = `INSERT INTO users (username, email, pass,avatar) VALUES (?, ?, ?, ?);`;
+    const sqlRegister = `INSERT INTO users (username, email, pass, avatar) VALUES (?, ?, ?, ?);`;
 
     try {
       const existingUser = (await client.query(sqlCheckUser, [
         newUser.email,
       ])) as User[];
+
+      console.log(existingUser);
+
       if (existingUser.length > 0) {
         return null;
       }
@@ -46,25 +59,26 @@ class AuthService {
         hashedPassword,
         newUser.avatar,
       ]);
-      return await this.login(newUser.email, hashedPassword);
+
+      return await this.login(newUser.email, newUser.pass);
     } catch (error) {
       console.error("Error en consulta al servidor:", error);
       throw new Error("Fallo en el registro");
     }
   }
-  async update(newUser: User): Promise<User | null> {
-    const sql = `UPDATE users SET username = ?, pass = ?, avatar = ?  WHERE email = ? ;`;
+  async update(updateUser: User) {
+    const sql = `DELETE FROM users WHERE email = ?;`;
 
     try {
-      const hashedPassword = await bcrypt.hash(newUser.pass, 10);
+      await client.query(sql, [updateUser.email]);
+      const hashedPassword = await bcrypt.hash(updateUser.pass, 10);
 
-      await client.query(sql, [
-        newUser.username,
-        hashedPassword,
-        newUser.avatar,
-        newUser.email,
-      ]);
-      return await this.login(newUser.email, hashedPassword);
+      const updated = await this.register({
+        ...updateUser,
+        pass: hashedPassword,
+      });
+
+      return updated;
     } catch (error) {
       console.error("Error en consulta al servidor:", error);
       throw new Error("Fallo en el registro");
