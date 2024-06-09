@@ -1,16 +1,12 @@
 import { Request, Response } from "express";
 import FilmsService from "../services/films.service";
+import Film from "../models/film.model";
 
 const service = new FilmsService();
 
-const getAllFilms = async (req: Request, res: Response) => {
-  try {
-    const films = await service.getAllFilms();
-    console.log(films);
-    res.status(200).json(films);
-  } catch (error) {
-    res.status(500).json({ message: "error" });
-  }
+const uploadFilm = async (req: Request, res: Response, route: string) => {
+  console.log(req.files);
+  res.send("Termina");
 };
 const getAllFilmsByCategory = async (req: Request, res: Response) => {
   try {
@@ -104,7 +100,7 @@ const unLikeFilm = async (req: Request, res: Response) => {
 };
 
 export {
-  getAllFilms,
+  uploadFilm,
   getAllFilmsByCategory,
   getFilm,
   getGenres,

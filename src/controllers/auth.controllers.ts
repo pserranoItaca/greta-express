@@ -7,7 +7,7 @@ const service = new AuthService();
 const login = async (req: Request, res: Response) => {
   try {
     const body = req.body as { email: string; pass: string };
-    console.log(body);
+    body;
     const user = await service.login(body.email, body.pass);
     if (user) {
       res.status(200).json(user);

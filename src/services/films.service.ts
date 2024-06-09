@@ -5,19 +5,6 @@ import Genre from "../models/genre.model";
 class FilmsService {
   constructor() {}
 
-  async getAllFilms() {
-    const sql = "SELECT * FROM films;";
-
-    try {
-      const rows = await client.query(sql);
-
-      return rows;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
-
   async getAllFilmsByCategory(category: string) {
     const sql = `SELECT films.*, subquery.*
       FROM films
@@ -27,7 +14,7 @@ class FilmsService {
           JOIN genres ON film_genre.genre_id = genres.id) AS subquery ON films.id = subquery.film_id WHERE route = ?`;
 
     try {
-      console.log(category);
+      category;
       const rows = (await client.query(sql, [category])) as Film[];
 
       if (rows.length === 0) {
@@ -36,7 +23,7 @@ class FilmsService {
 
       return rows;
     } catch (error) {
-      console.log(error);
+      error;
       console.error("Error al realizar la consulta :", error);
       throw new Error("GET de datos falló");
     }
@@ -52,7 +39,7 @@ class FilmsService {
       }
       return rows[0];
     } catch (error) {
-      console.log(error);
+      error;
       console.error("Error al realizar la consulta :", error);
       throw new Error("GET de datos falló");
     }
@@ -68,7 +55,7 @@ class FilmsService {
       }
       return rows;
     } catch (error) {
-      console.log(error);
+      error;
       console.error("Error al realizar la consulta :", error);
       throw new Error("GET de datos falló");
     }
@@ -83,7 +70,7 @@ class FilmsService {
 
       return true;
     } catch (error) {
-      console.log(error);
+      error;
       console.error("Error al realizar la consulta :", error);
       throw new Error("GET de datos falló");
     }
@@ -96,11 +83,13 @@ class FilmsService {
 
       return rows;
     } catch (error) {
-      console.log(error);
+      error;
       console.error("Error al realizar la consulta :", error);
       throw new Error("GET de datos falló");
     }
   }
+
+  async saveFilm(filmData: Film) {}
 }
 
 export default FilmsService;

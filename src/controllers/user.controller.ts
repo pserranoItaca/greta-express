@@ -6,10 +6,10 @@ const service = new UserService();
 const getUserInfo = async (req: Request, res: Response) => {
   try {
     const email = req.params.email;
-    console.log(email);
+    email;
 
     const userInfo = await service.getUserInfo(email);
-    console.log(userInfo);
+    userInfo;
     if (userInfo) {
       res.status(200).json(userInfo);
     } else {
@@ -22,7 +22,7 @@ const getUserInfo = async (req: Request, res: Response) => {
 const getFilmsInfo = async (req: Request, res: Response) => {
   try {
     const email = req.params.email;
-    console.log(email);
+    email;
     const userFilms = await service.getUserFilms(email);
 
     if (userFilms) {

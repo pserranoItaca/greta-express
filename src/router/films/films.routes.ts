@@ -1,20 +1,16 @@
 import express, { Request, Response } from "express";
-
 import fs from "node:fs";
 import path from "node:path";
-
 import {
-  getAllFilms,
   getFilm,
   getGenres,
   getAllFilmsByCategory,
   likeFilm,
   unLikeFilm,
+  uploadFilm,
 } from "../../controllers/films.controllers";
 
 const filmsRouter = express.Router();
-
-filmsRouter.get("/", getAllFilms);
 
 filmsRouter.get("/:id", getFilm);
 
@@ -26,7 +22,15 @@ filmsRouter.post("/category", getAllFilmsByCategory);
 
 filmsRouter.post("/:id", likeFilm);
 
-// filmsRouter.post("upoload", uploadFilm)
+// filmsRouter.post(
+//   "/upload/film",
+//   upload.fields([
+//     { name: "filmFile", maxCount: 1 },
+//     { name: "posterFile", maxCount: 1 },
+//     { name: "values", maxCount: 1 },
+//   ]),
+//   uploadFilm
+// );
 
 filmsRouter.get("/resource/:name", async (req: Request, res: Response) => {
   const fileName = req.params.name;
