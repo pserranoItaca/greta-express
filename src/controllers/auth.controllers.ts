@@ -47,4 +47,19 @@ const update = async (req: Request, res: Response) => {
   }
 };
 
-export { login, register, update };
+const deleteAcc = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const success = await service.deleteAcc(userId);
+    if (success) {
+      res.status(200).json({ message: "User deleted successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error en consulta al servidor:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export { login, register, update, deleteAcc };

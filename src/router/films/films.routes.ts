@@ -14,9 +14,19 @@ import {
 
 const filmsRouter = express.Router();
 
+filmsRouter.get("/", getAllFilms);
+
+filmsRouter.get("/:id", getFilm);
+
+filmsRouter.get("/genres/:id", getGenres);
+
+filmsRouter.post("/unlike/:id", unLikeFilm);
+
 filmsRouter.post("/category", getAllFilmsByCategory);
 
 filmsRouter.post("/:id", likeFilm);
+
+// filmsRouter.post("upoload", uploadFilm)
 
 filmsRouter.get("/resource/:name", async (req: Request, res: Response) => {
   const fileName = req.params.name;
@@ -51,10 +61,5 @@ filmsRouter.get(
     });
   }
 );
-
-filmsRouter.get("/", getAllFilms);
-filmsRouter.get("/:id", getFilm);
-filmsRouter.get("/genres/:id", getGenres);
-filmsRouter.post("/unlike/:id", unLikeFilm);
 
 export { filmsRouter };

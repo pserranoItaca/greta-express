@@ -15,8 +15,6 @@ class AuthService {
     try {
       const rows = (await client.query(sqlLogin, [email])) as User[];
 
-      console.log(rows);
-
       if (rows.length === 0) {
         return null;
       }
@@ -45,8 +43,6 @@ class AuthService {
         newUser.email,
       ])) as User[];
 
-      console.log(existingUser);
-
       if (existingUser.length > 0) {
         return null;
       }
@@ -66,24 +62,69 @@ class AuthService {
       throw new Error("Fallo en el registro");
     }
   }
-  async update(updateUser: User) {
-    const sql = `DELETE FROM users WHERE email = ?;`;
-
+  async update(updateUser: User): Promise<User | null> {
+    const sqlSelect = `SELECT * FROM users WHERE email = ?`;
+    const sqlUpdate = `UPDATE users SET username = ?, pass = ?, avatar = ? WHERE id = ?`;
     try {
-      await client.query(sql, [updateUser.email]);
+      const currentUser = (await client.query(sqlSelect, [
+        updateUser.email,
+      ])) as User[];
+
+      if (!currentUser) {
+        throw new Error("Usuario no encontrado");
+      }
+
       const hashedPassword = await bcrypt.hash(updateUser.pass, 10);
 
-      const updated = await this.register({
-        ...updateUser,
+      const newData: User = {
+        id: updateUser.id,
+        email: updateUser.email,
+        avatar: updateUser.avatar || currentUser[0].avatar,
+        username: updateUser.username || currentUser[0].username,
         pass: hashedPassword,
-      });
+        active: false,
+        deleted: false,
+        created_at: "",
+        updated_at: "",
+        deleted_at: null,
+      };
 
-      return updated;
+      await client.query(sqlUpdate, [
+        newData.username,
+        newData.pass,
+        newData.avatar,
+        newData.id,
+      ]);
+
+      (await client.query(sqlSelect, [newData.email])) as User;
+      const response = (await client.query(sqlSelect, [
+        updateUser.email,
+      ])) as User[];
+      return response[0];
     } catch (error) {
       console.error("Error en consulta al servidor:", error);
       throw new Error("Fallo en el registro");
     }
   }
-}
 
+  async deleteAcc(id: string): Promise<boolean> {
+    const sqlDelete = `DELETE FROM users WHERE id = ?`;
+    const sqlCheck = `SELECT * FROM users WHERE id = ?`;
+
+    try {
+      await client.query(sqlDelete, [id]);
+      const check = (await client.query(sqlCheck, [id])) as any[];
+
+      // Verificar si el usuario fue realmente eliminado
+      if (check.length > 0) {
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error en consulta al servidor:", error);
+      throw new Error("Fallo en consulta");
+    }
+  }
+}
 export default AuthService;
