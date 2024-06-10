@@ -41,7 +41,7 @@ app.post("/upload", upload.single("filmFile"), async (req, res) => {
 
     const route = req.file ? saveImage(req.file) : null;
 
-    const sql = `INSERT INTO films (id ,title, descript, id_user, director, art, sound, cast, route) VALUES (? ,?, ?, ?, ?, ?, ?, ?, ?);`;
+    const sql = `INSERT INTO films (title, descript, id_user, director, art, sound, cast, route) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`;
 
     const film = await client.query(sql, [
       "999",

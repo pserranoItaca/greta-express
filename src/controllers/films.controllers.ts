@@ -8,18 +8,20 @@ const uploadFilm = async (req: Request, res: Response, route: string) => {
   console.log(req.files);
   res.send("Termina");
 };
-const getAllFilmsByCategory = async (req: Request, res: Response) => {
-  try {
-    const category = req.body as { slug: string };
 
+const getCategoryFilms = async (req: Request, res: Response) => {
+  try {
+    const category = req.params.slug;
     console.log(category);
-    const films = await service.getAllFilmsByCategory(category.slug);
+    const films = await service.getAllFilmsByCategory(category);
     console.log(films);
 
     if (films) {
       res.status(200).json(films);
     } else {
-      res.status(401).json({ message: "No access to the resource" });
+      res
+        .status(404)
+        .json({ message: "No films found for the specified category" });
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -60,25 +62,25 @@ const getGenres = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-const likeFilm = async (req: Request, res: Response) => {
-  try {
-    const email = req.body.email;
-    console.log(email);
-    const idFilm = req.params.id;
-    console.log(idFilm);
+// const likeFilm = async (req: Request, res: Response) => {
+//   try {
+//     const email = req.body.email;
+//     console.log(email);
+//     const idFilm = req.params.id;
+//     console.log(idFilm);
 
-    const response = await service.likeFilm(email, idFilm);
-    console.log(response);
+//     const response = await service.likeFilm(email, idFilm);
+//     console.log(response);
 
-    if (response) {
-      res.status(200);
-    } else {
-      res.status(401).json({ message: "No access to the resource" });
-    }
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+//     if (response) {
+//       res.status(200);
+//     } else {
+//       res.status(401).json({ message: "No access to the resource" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 const unLikeFilm = async (req: Request, res: Response) => {
   try {
     const email = req.body.email;
@@ -101,9 +103,9 @@ const unLikeFilm = async (req: Request, res: Response) => {
 
 export {
   uploadFilm,
-  getAllFilmsByCategory,
+  getCategoryFilms,
   getFilm,
   getGenres,
-  likeFilm,
+  // likeFilm,
   unLikeFilm,
 };

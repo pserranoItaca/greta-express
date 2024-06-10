@@ -6,15 +6,10 @@ class FilmsService {
   constructor() {}
 
   async getAllFilmsByCategory(category: string) {
-    const sql = `SELECT films.*, subquery.*
-      FROM films
-        JOIN (
-          SELECT film_genre.film_id, film_genre.genre_id, genres.*
-          FROM film_genre
-          JOIN genres ON film_genre.genre_id = genres.id) AS subquery ON films.id = subquery.film_id WHERE route = ?`;
+    const sql =
+      "SELECT * FROM films WHERE id IN (SELECT film_id FROM film_genre WHERE genre_id = (SELECT id FROM genres WHERE route = ?))";
 
     try {
-      category;
       const rows = (await client.query(sql, [category])) as Film[];
 
       if (rows.length === 0) {

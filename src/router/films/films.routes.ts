@@ -4,8 +4,8 @@ import path from "node:path";
 import {
   getFilm,
   getGenres,
-  getAllFilmsByCategory,
-  likeFilm,
+  getCategoryFilms,
+  // likeFilm,
   unLikeFilm,
   uploadFilm,
 } from "../../controllers/films.controllers";
@@ -18,9 +18,9 @@ filmsRouter.get("/genres/:id", getGenres);
 
 filmsRouter.post("/unlike/:id", unLikeFilm);
 
-filmsRouter.post("/category", getAllFilmsByCategory);
+filmsRouter.get("/category/:slug", getCategoryFilms);
 
-filmsRouter.post("/:id", likeFilm);
+// filmsRouter.post("/:id", likeFilm);
 
 // filmsRouter.post(
 //   "/upload/film",
